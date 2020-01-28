@@ -10,7 +10,17 @@
 #include <fstream>
 
 using namespace std;
-void displayMatrix(vector<vector<bool>> &vv, int step = -1, bool clearConsole = true);
-void loadFromFile(vector<vector<bool>> &vv, string const &fileName);
+
+void displayMatrix(char **w, int n, int m, int step = -1, bool clearConsole = true);
+
+void loadFromFile(char **&w, string const &fileName, int &n, int &m);
+
+void swap(char **&a, char **&b);
+
+char **cloneMatrix(char **w, int n, int m, int on_threads = 0);
+
+void copyMatrixContent(char **s, char **d, int n, int m, int on_threads = 0);
+
+char **allocMatrix(int n, int m, int on_threads = 0);
 
 #endif //PA_IOHELPERS_H

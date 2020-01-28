@@ -9,6 +9,6 @@
 
 using namespace std;
 
-void gameOfLifeStepSerial(char **&w, int n, int m);
+void gameOfLifeStepSerial(vector<vector<bool>> &v);
 
 #endif //PA_GOLSERIALHELPERS_H

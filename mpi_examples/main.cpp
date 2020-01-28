@@ -8,7 +8,7 @@
 *   in the higher range require more work to compute and may result in 
 *   load imbalance.  This program demonstrates embarrassing parallelism.
 *   Collective communications calls are used to reduce the only two data
-*   elements requiring communications: the number of primes found and
+*   elements requiring communications: the number of mpi_examples found and
 *   the largest prime.
 * AUTHOR: Blaise Barney 11/25/95 - adapted from version contributed by 
 *   Richard Ng &  Wong Sze Cheong during MHPCC Singapore Workshop (8/22/95).
@@ -20,7 +20,7 @@
 #include <math.h>
 #include <iostream>
 
-#define LIMIT     50000000     /* Increase this to find more primes */
+#define LIMIT     50000000     /* Increase this to find more mpi_examples */
 #define FIRST     0           /* Rank of first task */
 
 using namespace std;
@@ -34,7 +34,7 @@ int isprime(int n) {
                 return 0;
         return 1;
     }
-/* Assume first four primes are counted elsewhere. Forget everything else */
+/* Assume first four mpi_examples are counted elsewhere. Forget everything else */
     else
         return 0;
 }
@@ -45,7 +45,7 @@ int main(int argc, char *argv[]) {
             rank,                 /* task identifier */
             n,                    /* loop variable */
             pc,                   /* prime counter */
-            pcsum,                /* number of primes found by all tasks */
+            pcsum,                /* number of mpi_examples found by all tasks */
             foundone,             /* most recent prime found */
             maxprime,             /* largest prime found */
             mystart,              /* where to start calculating */
@@ -73,7 +73,7 @@ int main(int argc, char *argv[]) {
 /******************** task with rank 0 does this part ********************/
     if (rank == FIRST) {
         printf("Using %d tasks to scan %d numbers\n", ntasks, LIMIT);
-        pc = 4;                  /* Assume first four primes are counted here */
+        pc = 4;                  /* Assume first four mpi_examples are counted here */
         for (n = mystart; n <= LIMIT; n = n + stride) {
             if (isprime(n)) {
                 pc++;
@@ -86,7 +86,7 @@ int main(int argc, char *argv[]) {
         MPI_Reduce(&pc, &pcsum, 1, MPI_INT, MPI_SUM, FIRST, MPI_COMM_WORLD);
         MPI_Reduce(&foundone, &maxprime, 1, MPI_INT, MPI_MAX, FIRST, MPI_COMM_WORLD);
         end_time = MPI_Wtime();
-        printf("Done. Largest prime is %d Total primes %d\n", maxprime, pcsum);
+        printf("Done. Largest prime is %d Total mpi_examples %d\n", maxprime, pcsum);
         printf("Wallclock time elapsed: %.2lf seconds\n", end_time - start_time);
     }
     cout << 2 << endl;

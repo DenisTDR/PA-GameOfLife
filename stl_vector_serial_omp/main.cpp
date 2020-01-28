@@ -19,23 +19,22 @@ using namespace std;
 
 int typesToRun[] = {SERIAL, OPENMP_2TH, OPENMP_3TH, OPENMP_4TH, OPENMP_5TH, OPENMP_6TH, OPENMP_7TH, OPENMP_8TH};
 //int typesToRun[] = {SERIAL, OPENMP_2TH};
-//int typesToRun[] = {SERIAL};
 int typesToRunCount = sizeof(typesToRun) / sizeof(*typesToRun);
 
-void runAs(char **w, int n, int m, int steps, int type, string &fileName) {
+void runAs(vector<vector<bool>> &w, int steps, int type, string &fileName) {
 
     for (int i = 0; i < steps; i++) {
         if (type == SERIAL) {
-            gameOfLifeStepSerial(w, n, m);
+            gameOfLifeStepSerial(w);
         } else if (type >= OPENMP_2TH && type <= OPENMP_8TH) {
-            gameOfLifeStepOpenMp(w, n, m, type);
+            gameOfLifeStepOpenMp(w, type);
         }
     }
 }
 
 string getRunTypeName(int type);
 
-//void writeBigMatrix(vector<vector<bool>> &w, string &fileName);
+void writeBigMatrix(vector<vector<bool>> &w, string &fileName);
 
 int main(int argc, char **argv) {
 
@@ -48,22 +47,18 @@ int main(int argc, char **argv) {
     int test_count = stoi(argv[2]);
     string fileName = argv[3];
 
-    char **initialWorld, **tmpMatrix;
-    int n, m;
+    vector<vector<bool>> initialWorldConfig, world;
+
 
     cout << "fileName: " << fileName << endl;
-    loadFromFile(initialWorld, fileName, n, m);
+    loadFromFile(initialWorldConfig, fileName);
+    addPadding(initialWorldConfig, 1, 1, 1, 1);
 
-    cout << "size: " << n << "x" << m << endl;
+    cout << "size: " << initialWorldConfig.size() - 2 << "x"
+         << (!initialWorldConfig.empty() ? initialWorldConfig[0].size() - 2 : -1) << endl;
 
     cout << "tests per type: " << test_count << endl;
     cout << "steps: " << steps_count << endl;
-
-    tmpMatrix = cloneMatrix(initialWorld, n, m);
-//    tmpMatrix[7][2] = 0;
-//    swap(initialWorld, tmpMatrix);
-//    displayMatrix(initialWorld, n, m, -1, false);
-//    displayMatrix(tmpMatrix, n, m, -1, false);
 
     double avgTimes[typesToRunCount];
 
@@ -77,20 +72,15 @@ int main(int argc, char **argv) {
         for (int i = 0; i < test_count; i++) {
             double tbegin = omp_get_wtime();
 
-            if(!tmpMatrix) {
-                tmpMatrix = cloneMatrix(initialWorld, n, m);
-            } else {
-                copyMatrixContent(initialWorld, tmpMatrix, n, m);
-            }
-
-            runAs(tmpMatrix, n, m, steps_count, runType, fileName);
+            world = initialWorldConfig;
+            runAs(world, steps_count, runType, fileName);
 
 
             double time_spent = omp_get_wtime() - tbegin;
             timeForType += time_spent;
             cout << "     #" << i << ": " << time_spent << "s" << endl;
 
-            auto crtAliveCells = countAliveCells(tmpMatrix, n, m);
+            auto crtAliveCells = countAliveCells(world);
             if (lastAliveCellsCount == -1) {
                 lastAliveCellsCount = crtAliveCells;
             } else if (lastAliveCellsCount != crtAliveCells) {
@@ -106,7 +96,8 @@ int main(int argc, char **argv) {
     cout << endl;
     cout << "Alive cells " << lastAliveCellsCount << endl;
     cout << "steps: " << steps_count << endl;
-    cout << "size: " << n << "x" << m << endl;
+    cout << "size: " << initialWorldConfig.size() - 2 << "x"
+         << (!initialWorldConfig.empty() ? initialWorldConfig[0].size() - 2 : -1) << endl;
     for (int t = 0; t < typesToRunCount; t++) {
         auto runType = typesToRun[t];
         cout << getRunTypeName(runType) << "    " << avgTimes[t] << "s" << endl;
@@ -126,30 +117,30 @@ string getRunTypeName(int type) {
 
     return "invalid run type!!!";
 }
-//
-//
-//void writeBigMatrix(vector<vector<bool>> &w, string &fileName) {
-//    ofstream out;
-//    out.open(fileName);
-//    if (out.fail()) {
-//        cout << "can't open file: " << fileName << endl;
-//        exit(-1);
-//    }
-//
-//    out << w.size() * 10 << " " << w[0].size() * 10 << "\n";
-//
-//    for (int j = 0; j < 10; j++)
-//        for (const auto &v : w) {
-//            for (int i = 0; i < 10; i++) {
-//                for (auto x : v) {
-//                    out << x << " ";
-//                }
-//            }
-//            out << "\n";
-//        }
-//    out.flush();
-//    out.close();
-//}
+
+
+void writeBigMatrix(vector<vector<bool>> &w, string &fileName) {
+    ofstream out;
+    out.open(fileName);
+    if (out.fail()) {
+        cout << "can't open file: " << fileName << endl;
+        exit(-1);
+    }
+
+    out << w.size() * 10 << " " << w[0].size() * 10 << "\n";
+
+    for (int j = 0; j < 10; j++)
+        for (const auto &v : w) {
+            for (int i = 0; i < 10; i++) {
+                for (auto x : v) {
+                    out << x << " ";
+                }
+            }
+            out << "\n";
+        }
+    out.flush();
+    out.close();
+}
 
 
 //            string x = "./inputs/02-after-" + to_string(steps_count) + "-steps.in";
