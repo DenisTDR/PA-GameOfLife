@@ -35,15 +35,20 @@ bool calcNewState(bool oldState, int aliveNeighs) {
     return aliveNeighs == 3 || (oldState && aliveNeighs == 2);
 }
 
+void updateCell(vector<vector<bool>> &in, vector<vector<bool>> &out, int i, int j, int n, int m) {
+    char aliveNeighbours = countAliveNeighbours(in, i, j, n, m);
+    out[i][j] = calcNewState(in[i][j], aliveNeighbours);
+}
+
 
 void addPadding(vector<vector<bool>> &vv, int up, int right, int bottom, int left) {
 
-    for (auto & i : vv) {
+    for (auto &i : vv) {
         auto it = i.begin();
-        if(left) {
+        if (left) {
             i.insert(it, left, false);
         }
-        if(right) {
+        if (right) {
             it = i.end();
             i.insert(it, right, false);
         }
@@ -55,6 +60,15 @@ void addPadding(vector<vector<bool>> &vv, int up, int right, int bottom, int lef
 
     itv = vv.end();
     vv.insert(itv, bottom, vector<bool>(vv[0].size(), false));
+}
 
+int countAliveCells(vector<vector<bool>> &v) {
+    int count = 0;
 
+    for (auto &i : v) {
+        for (auto &&j : i) {
+            count = count + j;
+        }
+    }
+    return count;
 }

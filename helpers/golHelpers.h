@@ -9,10 +9,10 @@
 
 using namespace std;
 
-char countAliveNeighbours(vector<vector<bool>> &vv, int i, int j, int n, int m);
-
-bool calcNewState(bool oldState, int aliveNeighs);
-
 void addPadding(vector<vector<bool>> &vv, int up, int right, int bottom, int left);
+
+void updateCell(vector<vector<bool>> &in, vector<vector<bool>> &out, int i, int j, int n, int m);
+
+int countAliveCells(vector<vector<bool>> &v);
 
 #endif //PA_GOLHELPERS_H
