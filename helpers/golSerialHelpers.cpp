@@ -12,13 +12,13 @@ vector<vector<bool>> tmp;
 
 void gameOfLifeStepSerial(vector<vector<bool>> &v) {
 
-    tmp.resize(v.size(), vector<bool>(v[0].size()));
+    tmp.resize(v.size(), vector<bool>(v[1].size()));
 
-    int n = v.size();
-    int m = v[0].size();
+    int n = (int) v.size() - 1;
+    int m = (int) v[1].size() - 1;
 
-    for (auto i = 0; i < n; i++) {
-        for (auto j = 0; j < m; j++) {
+    for (auto i = 1; i < n; i++) {
+        for (auto j = 1; j < m; j++) {
             updateCell(v, tmp, i, j, n, m);
         }
     }

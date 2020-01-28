@@ -1,3 +1,4 @@
-exe
+exe*
+*.exe
 cmake-build-debug
 .idea

@@ -15,19 +15,11 @@ int neighboursOffsets[][2] = {{-1, -1},
 
 char countAliveNeighbours(vector<vector<bool>> &vv, int i, int j, int n, int m) {
     char alive = 0;
-    int x, y;
     for (auto &neighboursOffset : neighboursOffsets) {
-        x = i + neighboursOffset[0];
-        y = j + neighboursOffset[1];
-
-        //check out of range
-        if (x < 0 || y < 0 || x >= n || y >= m) continue;
-
-        if (vv[x][y]) {
+        if (vv[i + neighboursOffset[0]][j + neighboursOffset[1]]) {
             alive++;
         }
     }
-
     return alive;
 }
 
@@ -55,7 +47,6 @@ void addPadding(vector<vector<bool>> &vv, int up, int right, int bottom, int lef
     }
 
     auto itv = vv.begin();
-    itv = vv.begin();
     vv.insert(itv, up, vector<bool>(vv[0].size(), false));
 
     itv = vv.end();

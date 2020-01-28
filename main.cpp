@@ -17,10 +17,8 @@ using namespace std;
 #define OPENMP_7TH 7
 #define OPENMP_8TH 8
 
-#define STEP_COUNT 150
-#define TEST_COUNT 5
-
 int typesToRun[] = {SERIAL, OPENMP_2TH, OPENMP_3TH, OPENMP_4TH, OPENMP_5TH, OPENMP_6TH, OPENMP_7TH, OPENMP_8TH};
+//int typesToRun[] = {SERIAL, OPENMP_2TH};
 int typesToRunCount = sizeof(typesToRun) / sizeof(*typesToRun);
 
 void runAs(vector<vector<bool>> &w, int steps, int type, string &fileName) {
@@ -36,17 +34,31 @@ void runAs(vector<vector<bool>> &w, int steps, int type, string &fileName) {
 
 string getRunTypeName(int type);
 
+void writeBigMatrix(vector<vector<bool>> &w, string &fileName);
+
 int main(int argc, char **argv) {
+
+    if (argc != 4) {
+        printf("Usage: %s [Steps] [TestCount] <filename>\n", argv[0]);
+        return 0;
+    }
+
+    int steps_count = stoi(argv[1]);
+    int test_count = stoi(argv[2]);
+    string fileName = argv[3];
 
     vector<vector<bool>> initialWorldConfig, world;
 
-    string fileName = argc == 1 ? "./inputs/01.in" : argv[1];
+
     cout << "fileName: " << fileName << endl;
     loadFromFile(initialWorldConfig, fileName);
-    addPadding(initialWorldConfig, 500, 500, 500, 500);
+    addPadding(initialWorldConfig, 1, 1, 1, 1);
+
     cout << "size: " << initialWorldConfig.size() << "x"
          << (!initialWorldConfig.empty() ? initialWorldConfig[0].size() : -1) << endl;
-    cout << "steps: " << STEP_COUNT << endl;
+
+    cout << "tests per type: " << test_count << endl;
+    cout << "steps: " << steps_count << endl;
 
     double avgTimes[typesToRunCount];
 
@@ -57,11 +69,11 @@ int main(int argc, char **argv) {
         auto runType = typesToRun[t];
         double timeForType = 0;
         cout << "\n" << getRunTypeName(runType) << endl;
-        for (int i = 0; i < TEST_COUNT; i++) {
+        for (int i = 0; i < test_count; i++) {
             double tbegin = omp_get_wtime();
 
             world = initialWorldConfig;
-            runAs(world, STEP_COUNT, runType, fileName);
+            runAs(world, steps_count, runType, fileName);
 
 
             double time_spent = omp_get_wtime() - tbegin;
@@ -77,19 +89,16 @@ int main(int argc, char **argv) {
                 exit(1);
             }
         }
-        avgTimes[t] = timeForType / TEST_COUNT;
+        avgTimes[t] = timeForType / test_count;
         cout << "    Avg: " << avgTimes[t] << "\n";
     }
 
-
     cout << endl;
+    cout << "Alive cells " << lastAliveCellsCount << endl;
     for (int t = 0; t < typesToRunCount; t++) {
         auto runType = typesToRun[t];
-
         cout << getRunTypeName(runType) << "    " << avgTimes[t] << "s" << endl;
-
     }
-
 
     return 0;
 }
@@ -106,3 +115,32 @@ string getRunTypeName(int type) {
     return "invalid run type!!!";
 }
 
+
+void writeBigMatrix(vector<vector<bool>> &w, string &fileName) {
+    ofstream out;
+    out.open(fileName);
+    if (out.fail()) {
+        cout << "can't open file: " << fileName << endl;
+        exit(-1);
+    }
+
+    out << w.size() * 10 << " " << w[0].size() * 10 << "\n";
+
+    for(int j = 0; j < 10; j++)
+        for (const auto &v : w) {
+        for(int i = 0; i < 10; i++) {
+            for (auto x : v) {
+                out << x << " ";
+            }
+        }
+        out << "\n";
+    }
+    out.flush();
+    out.close();
+}
+
+
+//            string x = "./inputs/02-after-" + to_string(steps_count) + "-steps.in";
+//            string x = "./inputs/05-steps.in";
+//            writeBigMatrix(world, x);
+//            exit(-1);
