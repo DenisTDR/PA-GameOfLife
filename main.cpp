@@ -20,7 +20,7 @@ using namespace std;
 #define STEP_COUNT 150
 #define TEST_COUNT 5
 
-int typesToRun[] = {OPENMP_2TH, OPENMP_3TH, OPENMP_4TH, OPENMP_5TH, OPENMP_6TH, OPENMP_7TH, OPENMP_8TH};
+int typesToRun[] = {SERIAL, OPENMP_2TH, OPENMP_3TH, OPENMP_4TH, OPENMP_5TH, OPENMP_6TH, OPENMP_7TH, OPENMP_8TH};
 int typesToRunCount = sizeof(typesToRun) / sizeof(*typesToRun);
 
 void runAs(vector<vector<bool>> &w, int steps, int type, string &fileName) {
