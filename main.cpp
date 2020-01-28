@@ -97,7 +97,7 @@ int main(int argc, char **argv) {
 string getRunTypeName(int type) {
 
     if (type == 0) {
-        return "SERIAL";
+        return "SERIAL            ";
     }
     if (type >= OPENMP_2TH && type <= OPENMP_8TH) {
         return "OpenMP - " + to_string(type) + " threads";
