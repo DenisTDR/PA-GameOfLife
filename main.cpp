@@ -4,7 +4,7 @@
 #include "helpers/golSerialHelpers.h"
 #include "helpers/golHelpers.h"
 #include "helpers/golOpenMpHelpers.h"
-
+#include <string>
 
 using namespace std;
 
@@ -17,16 +17,20 @@ using namespace std;
 #define OPENMP_7TH 7
 #define OPENMP_8TH 8
 
-int typesToRun[] = {SERIAL, OPENMP_2TH, OPENMP_3TH, OPENMP_4TH, OPENMP_5TH, OPENMP_6TH, OPENMP_7TH, OPENMP_8TH};
-//int typesToRun[] = {SERIAL, OPENMP_2TH};
+//int typesToRun[] = {SERIAL, OPENMP_2TH, OPENMP_3TH, OPENMP_4TH, OPENMP_5TH, OPENMP_6TH, OPENMP_7TH, OPENMP_8TH};
+int typesToRun[] = {SERIAL, OPENMP_2TH, OPENMP_4TH};
 //int typesToRun[] = {SERIAL};
 int typesToRunCount = sizeof(typesToRun) / sizeof(*typesToRun);
+bool **plm = nullptr;
+string rand123;
 
-void runAs(bool **w, int n, int m, int steps, int type, string &fileName) {
-
+void runAs(bool **&w, int n, int m, int steps, int type, string &fileName) {
+//    displayMatrix(w, n, m, 0, false);
     for (int i = 0; i < steps; i++) {
         if (type == SERIAL) {
-            gameOfLifeStepSerial(w, n, m);
+            gameOfLifeStepSerial(w, plm, n, m, 0, false, 0, rand123);
+
+//            displayMatrix(w, n, m, i + 1, false);
         } else if (type >= OPENMP_2TH && type <= OPENMP_8TH) {
             gameOfLifeStepOpenMp(w, n, m, type);
         }
@@ -48,10 +52,10 @@ int main(int argc, char **argv) {
     int test_count = stoi(argv[2]);
     string fileName = argv[3];
 
-    bool **initialWorld, **tmpMatrix;
+    bool **initialWorld, **tmpMatrix = nullptr;
     int n, m;
 
-    doInitialWork(initialWorld, tmpMatrix, n, m, steps_count, test_count, fileName);
+    doInitialWork(initialWorld, n, m, steps_count, test_count, fileName);
 
 //    tmpMatrix[7][2] = 0;
 //    swap(initialWorld, tmpMatrix);
@@ -70,7 +74,7 @@ int main(int argc, char **argv) {
         for (int i = 0; i < test_count; i++) {
             double tbegin = omp_get_wtime();
 
-            if (!tmpMatrix) {
+            if (tmpMatrix == nullptr) {
                 tmpMatrix = cloneMatrix(initialWorld, n, m);
             } else {
                 copyMatrixContent(initialWorld, tmpMatrix, n, m);
@@ -95,6 +99,9 @@ int main(int argc, char **argv) {
         avgTimes[t] = timeForType / test_count;
         cout << "    Avg: " << avgTimes[t] << "\n";
     }
+
+//    writeBigMatrix(tmpMatrix, n, m, "./inputs/serial.out");
+//    displayMatrix(tmpMatrix, n, m, -1, false);
 
     cout << endl;
     cout << "Alive cells " << lastAliveCellsCount << endl;

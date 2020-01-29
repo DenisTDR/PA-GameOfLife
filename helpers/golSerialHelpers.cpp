@@ -6,20 +6,34 @@
 #include "golSerialHelpers.h"
 #include "golHelpers.h"
 #include "ioHelpers.h"
+#include <string>
 
 using namespace std;
 
-void gameOfLifeStepSerial(bool **&v, int n, int m) {
+void
+gameOfLifeStepSerial(bool **&v, bool **&customTmp, int n, int m, int startRowOffset, bool skipSwap, int virtualOffset,
+                     string const tag) {
 
     static bool **tmp;
-    if(!tmp) {
-        tmp = allocMatrix(n, m);
+    if (customTmp != nullptr) {
+        tmp = customTmp;
+    } else {
+        if (!tmp) {
+            tmp = allocMatrix(n, m);
+        }
     }
 
-    for (auto i = 1; i < n; i++) {
+
+    for (auto i = 1 + startRowOffset; i < n; i++) {
+        if (!tag.empty()) {
+//            cout << tag << " processing row " << (virtualOffset != -1 ? (i + virtualOffset) : -1) << endl;
+        }
         for (auto j = 1; j < m; j++) {
             updateCell(v, tmp, i, j);
         }
     }
-    swap(v, tmp);
+    if (!skipSwap) {
+        swap(v, tmp);
+    }
+//    copyMatrixContent(tmp, v, n, m, startRowOffset);
 }

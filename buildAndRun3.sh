@@ -1,9 +1,9 @@
 #!/bin/bash
 
-rm -rf ./exe
+rm -rf ./exe2
 
-mpiCC -o exe main2.cpp helpers/ioHelpers.cpp || exit
+mpiCC -O3 -o exe2 -Wall -lgomp -fopenmp main2.cpp helpers/ioHelpers.cpp helpers/golSerialHelpers.cpp helpers/golHelpers.cpp helpers/golOpenMpHelpers.cpp || exit
 
-mpirun -np 4 ./exe 200 5 ./inputs/02.in
+mpirun -np $2 ./exe2 $1 1 ./inputs/06.in
 
-rm ./exe
+#rm ./exe2

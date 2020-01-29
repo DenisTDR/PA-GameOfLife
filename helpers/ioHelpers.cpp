@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <sstream>
 
 #include "ioHelpers.h"
 
@@ -53,18 +54,18 @@ bool **allocMatrix(int n, int m, int on_threads) {
     return w;
 }
 
-void copyMatrixContent(bool **s, bool **d, int n, int m, int on_threads) {
+void copyMatrixContent(bool **s, bool **d, int n, int m, int on_threads, int startRowOffset) {
 
     if (on_threads) {
 #pragma omp parallel for num_threads(on_threads)
-        for (auto i = 1; i <= n; i++) {
+        for (auto i = 1 + startRowOffset; i <= n; i++) {
             for (auto j = 1; j <= m; j++) {
                 d[i][j] = s[i][j];
             }
         }
 
     } else {
-        for (auto i = 1; i <= n; i++) {
+        for (auto i = 1 + startRowOffset; i <= n; i++) {
             for (auto j = 1; j <= m; j++) {
                 d[i][j] = s[i][j];
             }
@@ -74,10 +75,18 @@ void copyMatrixContent(bool **s, bool **d, int n, int m, int on_threads) {
 
 bool **cloneMatrix(bool **w, int n, int m, int on_threads) {
     bool **tmp = allocMatrix(n, m);
+//    cout << "cloning matrix" << endl;
     copyMatrixContent(w, tmp, n, m, on_threads);
     return tmp;
 }
 
+void clearMatrix(bool **w, int n, int m) {
+    for (auto i = 1; i <= n; i++) {
+        for (auto j = 1; j <= m; j++) {
+            w[i][j] = false;
+        }
+    }
+}
 
 void clear();
 
@@ -85,17 +94,19 @@ void displayMatrix(bool **w, int n, int m, int step, bool clearConsole) {
     if (clearConsole) {
         clear();
     }
-    cout << endl;
+    stringstream ss;
+    ss << endl;
     if (step != -1) {
-        cout << "Step #" << step << "\n\n";
+        ss << "Step #" << step << "\n\n";
     }
     for (auto i = 1; i <= n; i++) {
         for (auto j = 1; j <= m; j++) {
-            cout << " " << (w[i][j] ? "X" : "-") << " ";
+            ss << " " << (w[i][j] ? "X" : "-") << " ";
         }
-        cout << "\n";
+        ss << "\n";
     }
-    cout << "\n";
+    ss << "\n";
+    cout << ss.str();
 }
 
 void clear() {
@@ -103,7 +114,7 @@ void clear() {
 }
 
 
-void doInitialWork(bool **&initialWorld, bool **&tmpMatrix, int &n, int &m, int steps_count, int test_count,
+void doInitialWork(bool **&initialWorld, int &n, int &m, int steps_count, int test_count,
                    string &fileName) {
     cout << "fileName: " << fileName << endl;
     loadFromFile(initialWorld, fileName, n, m);
@@ -112,6 +123,24 @@ void doInitialWork(bool **&initialWorld, bool **&tmpMatrix, int &n, int &m, int 
 
     cout << "tests per type: " << test_count << endl;
     cout << "steps: " << steps_count << endl;
+}
 
-    tmpMatrix = cloneMatrix(initialWorld, n, m);
+void writeBigMatrix(bool **&w, int n, int m, string fileName) {
+    ofstream out;
+    out.open(fileName);
+    if (out.fail()) {
+        cout << "can't open file: " << fileName << endl;
+        exit(-1);
+    }
+
+    out << n << " " << m << "\n";
+
+    for (auto i = 1; i <= n; i++) {
+        for (auto j = 1; j <= m; j++) {
+            out << w[i][j] << " ";
+        }
+        out << "\n";
+    }
+    out.flush();
+    out.close();
 }

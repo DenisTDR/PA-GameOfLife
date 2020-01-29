@@ -23,15 +23,14 @@ char countAliveNeighbours(bool **vv, int i, int j) {
     return alive;
 }
 
-char calcNewState(bool oldState, int aliveNeighs) {
-    return (char) (aliveNeighs == 3 || (oldState && aliveNeighs == 2));
+bool calcNewState(bool oldState, int aliveNeighs) {
+    return aliveNeighs == 3 || (oldState && aliveNeighs == 2);
 }
 
 void updateCell(bool **in, bool **out, int i, int j) {
     if (calcNewState(in[i][j], countAliveNeighbours(in, i, j)) ^ out[i][j]) {
         out[i][j] ^= 1u;
     }
-//    out[i][j] = calcNewState(in[i][j], countAliveNeighbours(in, i, j));
 }
 
 
