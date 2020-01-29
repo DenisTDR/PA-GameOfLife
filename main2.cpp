@@ -1,7 +1,5 @@
 #include "mpi.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
+#include "helpers/ioHelpers.h"
 #include <iostream>
 #include <unistd.h>
 
@@ -22,17 +20,34 @@ void slaveTask(int rank) {
 
 void masterTask(int ntasks) {
 //    MPI_Status status;
+
+    int nr = 100;
     for (auto i = 0; i < ntasks; i++) {
-        int nr = i * 10;
+        nr += 10;
         cout << "[" << 0 << "] " << "sending " << nr << " to task " << i << endl;
         MPI_Send(&nr, 1, MPI_INT, i, TAG1, MPI_COMM_WORLD);
         cout << "[" << 0 << "] " << "sent " << nr << " to task " << i << endl;
+        usleep(250 * 1000);
     }
     slaveTask(0);
 }
 
 
 int main(int argc, char *argv[]) {
+    if (argc != 4) {
+        printf("Usage: %s [Steps] [TestCount] <filename>\n", argv[0]);
+        return -1;
+    }
+    int steps_count = stoi(argv[1]);
+    int test_count = stoi(argv[2]);
+    string fileName = argv[3];
+
+    char **initialWorld, **tmpMatrix;
+    int n, m;
+
+    cout << "fileName: " << fileName << endl;
+    loadFromFile(initialWorld, fileName, n, m);
+
     int ntasks,               /* total number of tasks in partitiion */
             rank;                 /* task identifier */
 //            n,                    /* loop variable */
@@ -44,16 +59,13 @@ int main(int argc, char *argv[]) {
 //            stride;               /* calculate every nth number */
 //
 
-    int n = 10;
-    int m = 10;
-
     MPI_Init(&argc, &argv);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &ntasks);
 
     if (rank == MASTER) {
         cout << "task number: " << ntasks << endl;
-
+//        doInitialWork(initialWorld, tmpMatrix, n, m, steps_count, test_count, fileName);
         masterTask(ntasks);
     } else {
         cout << "task #" << rank << " started" << endl;
@@ -63,3 +75,4 @@ int main(int argc, char *argv[]) {
     MPI_Finalize();
     return 0;
 }
+

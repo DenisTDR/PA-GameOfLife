@@ -11,8 +11,8 @@ using namespace std;
 
 void addPadding(vector<vector<bool>> &vv, int up, int right, int bottom, int left);
 
-void updateCell(char **in, char **out, int i, int j);
+void updateCell(bool **in, bool **out, int i, int j);
 
-int countAliveCells(char **w, int n, int m);
+int countAliveCells(bool **w, int n, int m);
 
 #endif //PA_GOLHELPERS_H

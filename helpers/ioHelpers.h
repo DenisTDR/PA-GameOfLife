@@ -11,16 +11,19 @@
 
 using namespace std;
 
-void displayMatrix(char **w, int n, int m, int step = -1, bool clearConsole = true);
+void displayMatrix(bool **w, int n, int m, int step = -1, bool clearConsole = true);
 
-void loadFromFile(char **&w, string const &fileName, int &n, int &m);
+void loadFromFile(bool **&w, string const &fileName, int &n, int &m);
 
-void swap(char **&a, char **&b);
+void swap(bool **&a, bool **&b);
 
-char **cloneMatrix(char **w, int n, int m, int on_threads = 0);
+bool **cloneMatrix(bool **w, int n, int m, int on_threads = 0);
 
-void copyMatrixContent(char **s, char **d, int n, int m, int on_threads = 0);
+void copyMatrixContent(bool **s, bool **d, int n, int m, int on_threads = 0);
 
-char **allocMatrix(int n, int m, int on_threads = 0);
+bool **allocMatrix(int n, int m, int on_threads = 0);
+
+void doInitialWork(bool **&initialWorld, bool **&tmpMatrix, int &n, int &m, int steps_count, int test_count,
+                   string &fileName);
 
 #endif //PA_IOHELPERS_H

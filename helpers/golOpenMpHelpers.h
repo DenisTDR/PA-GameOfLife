@@ -8,6 +8,6 @@
 #include <vector>
 
 using namespace std;
-void gameOfLifeStepOpenMp(char **&v, int n, int m, int threads);
+void gameOfLifeStepOpenMp(bool **&v, int n, int m, int threads);
 
 #endif //PA_GOLOPENMPHELPERS_H

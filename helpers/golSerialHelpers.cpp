@@ -9,9 +9,9 @@
 
 using namespace std;
 
-void gameOfLifeStepSerial(char **&v, int n, int m) {
+void gameOfLifeStepSerial(bool **&v, int n, int m) {
 
-    static char **tmp;
+    static bool **tmp;
     if(!tmp) {
         tmp = allocMatrix(n, m);
     }

@@ -11,8 +11,8 @@
 using namespace std;
 
 
-void gameOfLifeStepOpenMp(char **&v, int n, int m, int threads) {
-    static char **tmp;
+void gameOfLifeStepOpenMp(bool **&v, int n, int m, int threads) {
+    static bool **tmp;
     if (!tmp) {
         tmp = allocMatrix(n, m, threads);
     }

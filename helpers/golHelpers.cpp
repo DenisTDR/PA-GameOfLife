@@ -13,7 +13,7 @@ int neighboursOffsets[][2] = {{-1, -1},
                               {1,  0},
                               {1,  1}};
 
-char countAliveNeighbours(char **vv, int i, int j) {
+char countAliveNeighbours(bool **vv, int i, int j) {
     char alive = 0;
     for (auto &neighboursOffset : neighboursOffsets) {
         if (vv[i + neighboursOffset[0]][j + neighboursOffset[1]]) {
@@ -27,8 +27,11 @@ char calcNewState(bool oldState, int aliveNeighs) {
     return (char) (aliveNeighs == 3 || (oldState && aliveNeighs == 2));
 }
 
-void updateCell(char **in, char **out, int i, int j) {
-    out[i][j] = calcNewState(in[i][j], countAliveNeighbours(in, i, j));
+void updateCell(bool **in, bool **out, int i, int j) {
+    if (calcNewState(in[i][j], countAliveNeighbours(in, i, j)) ^ out[i][j]) {
+        out[i][j] ^= 1u;
+    }
+//    out[i][j] = calcNewState(in[i][j], countAliveNeighbours(in, i, j));
 }
 
 
@@ -52,7 +55,7 @@ void addPadding(vector<vector<bool>> &vv, int up, int right, int bottom, int lef
     vv.insert(itv, bottom, vector<bool>(vv[0].size(), false));
 }
 
-int countAliveCells(char **w, int n, int m) {
+int countAliveCells(bool **w, int n, int m) {
     int count = 0;
     for (auto i = 1; i <= n; i++) {
         for (auto j = 1; j <= m; j++) {

@@ -9,7 +9,7 @@
 
 using namespace std;
 
-void loadFromFile(char **&w, string const &fileName, int &n, int &m) {
+void loadFromFile(bool **&w, string const &fileName, int &n, int &m) {
     ifstream in;
     in.open(fileName);
     if (in.fail()) {
@@ -24,36 +24,36 @@ void loadFromFile(char **&w, string const &fileName, int &n, int &m) {
     for (auto i = 1; i <= n; i++) {
         for (auto j = 1; j <= m; j++) {
             in >> x;
-            w[i][j] = (char) x;
+            w[i][j] = (bool) x;
         }
     }
     in.close();
 }
 
-void swap(char **&a, char **&b) {
-    char **tmp = a;
+void swap(bool **&a, bool **&b) {
+    bool **tmp = a;
     a = b;
     b = tmp;
 }
 
-char **allocMatrix(int n, int m, int on_threads) {
-    char **w;
-    w = (char **) calloc(n + 2, sizeof(char *));
+bool **allocMatrix(int n, int m, int on_threads) {
+    bool **w;
+    w = (bool **) calloc(n + 2, sizeof(bool *));
 
     if (on_threads) {
 #pragma omp parallel for num_threads(on_threads)
         for (auto i = 0; i <= n + 1; i++) {
-            w[i] = (char *) calloc(m + 2, sizeof(char));
+            w[i] = (bool *) calloc(m + 2, sizeof(bool));
         }
     } else {
         for (auto i = 0; i <= n + 1; i++) {
-            w[i] = (char *) calloc(m + 2, sizeof(char));
+            w[i] = (bool *) calloc(m + 2, sizeof(bool));
         }
     }
     return w;
 }
 
-void copyMatrixContent(char **s, char **d, int n, int m, int on_threads) {
+void copyMatrixContent(bool **s, bool **d, int n, int m, int on_threads) {
 
     if (on_threads) {
 #pragma omp parallel for num_threads(on_threads)
@@ -72,8 +72,8 @@ void copyMatrixContent(char **s, char **d, int n, int m, int on_threads) {
     }
 }
 
-char **cloneMatrix(char **w, int n, int m, int on_threads) {
-    char **tmp = allocMatrix(n, m);
+bool **cloneMatrix(bool **w, int n, int m, int on_threads) {
+    bool **tmp = allocMatrix(n, m);
     copyMatrixContent(w, tmp, n, m, on_threads);
     return tmp;
 }
@@ -81,7 +81,7 @@ char **cloneMatrix(char **w, int n, int m, int on_threads) {
 
 void clear();
 
-void displayMatrix(char **w, int n, int m, int step, bool clearConsole) {
+void displayMatrix(bool **w, int n, int m, int step, bool clearConsole) {
     if (clearConsole) {
         clear();
     }
@@ -100,4 +100,18 @@ void displayMatrix(char **w, int n, int m, int step, bool clearConsole) {
 
 void clear() {
     cout << "\033[2J\033[1;1H";
+}
+
+
+void doInitialWork(bool **&initialWorld, bool **&tmpMatrix, int &n, int &m, int steps_count, int test_count,
+                   string &fileName) {
+    cout << "fileName: " << fileName << endl;
+    loadFromFile(initialWorld, fileName, n, m);
+
+    cout << "size: " << n << "x" << m << endl;
+
+    cout << "tests per type: " << test_count << endl;
+    cout << "steps: " << steps_count << endl;
+
+    tmpMatrix = cloneMatrix(initialWorld, n, m);
 }

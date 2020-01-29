@@ -22,7 +22,7 @@ int typesToRun[] = {SERIAL, OPENMP_2TH, OPENMP_3TH, OPENMP_4TH, OPENMP_5TH, OPEN
 //int typesToRun[] = {SERIAL};
 int typesToRunCount = sizeof(typesToRun) / sizeof(*typesToRun);
 
-void runAs(char **w, int n, int m, int steps, int type, string &fileName) {
+void runAs(bool **w, int n, int m, int steps, int type, string &fileName) {
 
     for (int i = 0; i < steps; i++) {
         if (type == SERIAL) {
@@ -48,18 +48,11 @@ int main(int argc, char **argv) {
     int test_count = stoi(argv[2]);
     string fileName = argv[3];
 
-    char **initialWorld, **tmpMatrix;
+    bool **initialWorld, **tmpMatrix;
     int n, m;
 
-    cout << "fileName: " << fileName << endl;
-    loadFromFile(initialWorld, fileName, n, m);
+    doInitialWork(initialWorld, tmpMatrix, n, m, steps_count, test_count, fileName);
 
-    cout << "size: " << n << "x" << m << endl;
-
-    cout << "tests per type: " << test_count << endl;
-    cout << "steps: " << steps_count << endl;
-
-    tmpMatrix = cloneMatrix(initialWorld, n, m);
 //    tmpMatrix[7][2] = 0;
 //    swap(initialWorld, tmpMatrix);
 //    displayMatrix(initialWorld, n, m, -1, false);
@@ -77,7 +70,7 @@ int main(int argc, char **argv) {
         for (int i = 0; i < test_count; i++) {
             double tbegin = omp_get_wtime();
 
-            if(!tmpMatrix) {
+            if (!tmpMatrix) {
                 tmpMatrix = cloneMatrix(initialWorld, n, m);
             } else {
                 copyMatrixContent(initialWorld, tmpMatrix, n, m);
