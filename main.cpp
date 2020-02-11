@@ -21,14 +21,14 @@ using namespace std;
 int typesToRun[] = {SERIAL, OPENMP_2TH, OPENMP_4TH};
 //int typesToRun[] = {SERIAL};
 int typesToRunCount = sizeof(typesToRun) / sizeof(*typesToRun);
-bool **plm = nullptr;
+bool **someNullPtr = nullptr;
 string rand123;
 
 void runAs(bool **&w, int n, int m, int steps, int type, string &fileName) {
 //    displayMatrix(w, n, m, 0, false);
     for (int i = 0; i < steps; i++) {
         if (type == SERIAL) {
-            gameOfLifeStepSerial(w, plm, n, m, 0, false, 0, rand123);
+            gameOfLifeStepSerial(w, someNullPtr, n, m, 0, false, 0, rand123);
 
 //            displayMatrix(w, n, m, i + 1, false);
         } else if (type >= OPENMP_2TH && type <= OPENMP_8TH) {

@@ -25,9 +25,9 @@ gameOfLifeStepSerial(bool **&v, bool **&customTmp, int n, int m, int startRowOff
 
 
     for (auto i = 1 + startRowOffset; i < n; i++) {
-        if (!tag.empty()) {
+//        if (!tag.empty()) {
 //            cout << tag << " processing row " << (virtualOffset != -1 ? (i + virtualOffset) : -1) << endl;
-        }
+//        }
         for (auto j = 1; j < m; j++) {
             updateCell(v, tmp, i, j);
         }

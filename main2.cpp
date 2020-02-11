@@ -61,7 +61,7 @@ void slaveTask(int rank, int ntasks, bool **&someMatrix) {
     bool **matrix;
 
     if (rank != 0) {
-        matrix = allocMatrix(rc.slice_rows + 5, rc.cols + 5);
+        matrix = allocMatrix(rc.slice_rows + 2, rc.cols + 2);
         for (auto j = 0; j < rc.slice_rows + 2; j++) {
             MPI_Recv(matrix[j], rc.cols, MPI_BYTE, MASTER, SLICE_ROW, MPI_COMM_WORLD, &status);
         }
@@ -125,7 +125,7 @@ void slaveTask(int rank, int ntasks, bool **&someMatrix) {
         int offsetTop = 1 + !recUp + rowsAvailable;
 //        someDebug(rc, step, rowsAvailable, recUp, offsetTop);
         gameOfLifeOpenMp2(matrix, tmpMatrix, offsetTop, rc.cols, !recUp, true, rc.offset,
-                             "[" + to_string(rc.rank) + "]", THREADS);
+                          "[" + to_string(rc.rank) + "]", THREADS);
 
 
 
@@ -137,9 +137,9 @@ void slaveTask(int rank, int ntasks, bool **&someMatrix) {
                 if (recUp) {
 //                    cout << "[" << rc.rank << "] " << " received up (" << rc.offset << ")" << endl;
                     gameOfLifeOpenMp2(matrix, tmpMatrix, 2, rc.cols, 0,
-                                         true,
-                                         rc.offset,
-                                         "[" + to_string(rc.rank) + "]", THREADS);
+                                      true,
+                                      rc.offset,
+                                      "[" + to_string(rc.rank) + "]", THREADS);
                 }
             }
             if (!recBottom) {
@@ -147,9 +147,9 @@ void slaveTask(int rank, int ntasks, bool **&someMatrix) {
                 if (recBottom) {
 //                    cout << "[" << rc.rank << "] " << " received bottom (" << rc.offset + rc.slice_rows << ")" << endl;
                     gameOfLifeOpenMp2(matrix, tmpMatrix, rc.slice_rows + 1, rc.cols, rc.slice_rows - 1,
-                                         true,
-                                         rc.offset,
-                                         "[" + to_string(rc.rank) + "]", THREADS);
+                                      true,
+                                      rc.offset,
+                                      "[" + to_string(rc.rank) + "]", THREADS);
                 }
             }
         }
@@ -255,7 +255,7 @@ int main(int argc, char *argv[]) {
 
 
         double time_spent = omp_get_wtime() - tbegin;
-        cout << "MPI    - "<< ntasks << " tasks      " <<  time_spent << "s" << endl;
+        cout << "MPI    - " << ntasks << " tasks      " << time_spent << "s" << endl;
     } else {
 //        cout << "task #" << rank << " started" << endl;
         slaveTask(rank, ntasks, matrix);
